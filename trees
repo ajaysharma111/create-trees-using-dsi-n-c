@@ -1,0 +1,222 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct treenode{
+    int data;
+    struct treenode *left;
+    struct treenode *right;
+};
+
+void create_t(struct treenode *root){
+    struct treenode *temp;
+    temp = root;
+    char ch;
+    printf("add left child to %d? (y/n)\n", temp->data);
+    scanf(" %c",&ch);
+    if(ch == 'y' || ch == 'Y'){
+        struct treenode *curr;
+        curr = (struct treenode*)malloc(sizeof(struct treenode));
+        printf("enter data of left child:\n");
+        scanf("%d",&curr->data);
+        curr->left = NULL;
+        curr->right = NULL;
+        temp->left = curr;
+        create_t(curr);
+    }
+
+    printf("add right child to %d? (y/n)\n", temp->data);
+    scanf(" %c",&ch);
+    if(ch == 'y' || ch == 'Y'){
+        struct treenode *curr;
+        curr = (struct treenode*)malloc(sizeof(struct treenode));
+        printf("enter data of right child:\n");
+        scanf("%d",&curr->data);
+        curr->left = NULL;
+        curr->right = NULL;
+        temp->right = curr;
+        create_t(curr);
+
+    }
+
+}
+#define size 100
+struct treenode *stack[size];
+int top = -1;
+
+int isempty(){
+    return(top == -1);
+    
+}
+
+void push(struct treenode *node){
+    if(top == size - 1){
+        printf("\nstack overflow\n");
+        return;
+    }
+    stack[++top] = node;
+}
+
+struct treenode *pop(){
+    if(isempty()){
+        printf("\nstack underflow\n");
+        return NULL;
+    }
+    struct treenode *node = stack[top--];
+    return node;
+}
+void inorder_tree(struct treenode *root){
+    struct treenode *temp;
+    temp = root;
+    if(temp!=NULL){
+        inorder_tree(temp->left);
+        printf(" %d",temp->data);
+        inorder_tree(temp->right);
+    }
+}
+
+void inorder_nr(struct treenode *root){
+    struct treenode *temp = root;
+    while(1){
+        while(temp!=NULL){
+            push(temp);
+            temp = temp->left;
+        }
+        if(isempty()){
+            break;
+        }
+        temp = pop();
+        printf(" %d",temp->data);
+        temp = temp->right;
+    }
+}
+
+void preorder_nr(struct treenode *root){
+    struct treenode *temp = root;
+    while(1){
+        while(temp!=NULL){
+            printf(" %d",temp->data);
+            push(temp);
+            temp = temp->left;
+        }
+        if(isempty()){
+            break;
+        }
+        temp = pop();
+        temp = temp->right;
+    }
+}
+
+void postorder_nr(struct treenode *root){
+    struct treenode *temp = root;
+    while(1){
+        while(temp!=NULL){
+            push(temp);
+            temp = temp->left;
+        }
+        if(stack[top]->right == NULL){
+            temp = pop();
+            printf(" %d",temp->data);
+        }
+        if(stack[top]->right == temp){
+            temp = pop();
+            printf(" %d",temp->data);
+        }
+        temp = stack[top]->right;
+    }
+}
+void preorder_tree(struct treenode *root){
+    struct treenode *temp;
+    temp = root;
+    if(temp!=NULL){
+        printf(" %d",temp->data);
+        preorder_tree(temp->left);
+        preorder_tree(temp->right);
+    }
+}
+void postorder_tree(struct treenode *root){
+    struct treenode *temp;
+    temp = root;
+    if(temp!=NULL){
+        postorder_tree(temp->left);
+        postorder_tree(temp->right);
+        printf(" %d",temp->data);
+    }
+}
+
+void create_nr(struct treenode *root){
+    char c;
+    do{
+        struct treenode *temp = root;
+        int flag = 0;
+        char ch;
+        struct treenode *curr;
+        curr = (struct treenode*)malloc(sizeof(struct treenode));
+        printf("\nenter data for current:\n");
+        scanf("%d",&curr->data);
+        while(flag == 0){
+            printf("\nchoose the node you add %d(left/right)",temp->data);
+            scanf(" %c",&ch);
+
+            if(ch == 'l'){
+                if(temp->left == NULL){
+                    temp->left = curr;
+                    flag = 1;
+                }
+                temp = temp->left;
+            }
+            else if(ch == 'r'){
+                if(temp->right == NULL){
+                    temp->right = curr;
+                    flag = 1;
+                }
+                temp = temp->right;
+            }
+        }
+        printf("\ndo you want to continue?(y/n)");
+        scanf(" %c",&c);
+    }while(c == 'y');
+}
+
+int main() {
+    struct treenode *root;
+    root = (struct treenode*)malloc(sizeof(struct treenode));
+    printf("enter root node:\n");
+    scanf("%d",&root->data);
+    root->left = NULL;
+    root->right=NULL;
+
+    int choice,d;
+    do{
+        printf("\n\n------ MENU ------\n");
+        printf("1. Create tree recursively\n");
+        printf("2. Create tree non-recursively\n");
+        printf("3. Inorder Traversal (Recursive)\n");
+        printf("4. Preorder Traversal (Recursive)\n");
+        printf("5. Postorder Traversal (Recursive)\n");
+        printf("6. Inorder Traversal (Non-Recursive)\n");
+        printf("7. Preorder Traversal (Non-Recursive)\n");
+        printf("8. Postorder Traversal (Non-Recursive)\n");
+        printf("9. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d",&choice);
+
+        switch(choice){
+            case 1: create_t(root); break;
+            case 2: create_nr(root); break;
+            case 3: printf("\nInorder (Recursive): "); inorder_tree(root); break;
+            case 4: printf("\nPreorder (Recursive): "); preorder_tree(root); break;
+            case 5: printf("\nPostorder (Recursive): "); postorder_tree(root); break;
+            case 6: printf("\nInorder (Non-Recursive): "); inorder_nr(root); break;
+            case 7: printf("\nPreorder (Non-Recursive): "); preorder_nr(root); break;
+            case 8: printf("\nPostorder (Non-Recursive): "); postorder_nr(root); break;
+            case 9: exit(0);
+            default: printf("\nInvalid choice!\n");
+        }
+         printf("do you continue : \ny/n\n");
+    scanf(" %c",&d);
+    }
+    while(d =='y');
+
+    return 0;
+}
